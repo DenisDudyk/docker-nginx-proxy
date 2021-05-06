@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   nginx-proxy:
-    container_name: docker_nginx_proxy
+#    container_name: docker_nginx_proxy
     image: jwilder/nginx-proxy
     ports:
       - 80:80
