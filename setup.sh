@@ -1,14 +1,30 @@
 #!/bin/bash
 
 dirName=$(dirname "$0")
-path=$(cd "$dirName" && pwd)
-dockerComposeFile="$path/docker-compose.yml"
+currentDir=$(cd "$dirName" && pwd)
+dockerComposeFile="$currentDir/docker-compose.yml"
+whatDo="$1"
 
-alreadyRan=$(docker ps -f name=dockernginxproxy_nginx-proxy -q | wc -l)
+startProxy () {
+  docker-compose -f "$dockerComposeFile" up -d --build
+  echo "Start completed"
+}
 
-if [ "$alreadyRan" == 1 ]
+stopProxy () {
+  for containerId in $(docker ps -f name=dockernginxproxy_nginx-proxy -q) ; do
+    docker stop "$containerId"
+  done
+
+  echo "Stop completed"
+}
+
+if [ "$whatDo" == "start" ]
 then
-docker stop $(docker ps -f name=dockernginxproxy_nginx-proxy -q) && docker-compose -f "$dockerComposeFile" up -d
+  startProxy
+elif [ "$whatDo" == "stop"  ]
+then
+  stopProxy
 else
-  docker-compose -f "$dockerComposeFile" up -d
+  stopProxy
+  startProxy
 fi
